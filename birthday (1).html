@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para Effy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #05030f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      overflow: hidden;
+    }
+
+    .stars {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--d) ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.1; transform: scale(0.8); }
+      to   { opacity: 0.9; transform: scale(1.2); }
+    }
+
+    .nebula {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      z-index: 0;
+    }
+
+    .btn-wrap {
+      position: relative;
+      z-index: 10;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .btn-wrap.hidden {
+      opacity: 0;
+      transform: scale(0.8);
+      pointer-events: none;
+    }
+
+    .push-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+      color: #e8d5f5;
+      background: transparent;
+      border: 1.5px solid rgba(180, 120, 255, 0.5);
+      padding: 18px 44px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .push-btn::before,
+    .push-btn::after {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border: 1px solid rgba(180, 120, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .push-btn:hover {
+      color: #fff;
+      border-color: rgba(220, 160, 255, 0.9);
+      background: rgba(120, 60, 180, 0.15);
+      box-shadow: 0 0 30px rgba(180, 100, 255, 0.3), inset 0 0 20px rgba(180, 100, 255, 0.05);
+      letter-spacing: 0.18em;
+    }
+
+    .push-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Partículas que caen */
+    .particle {
+      position: fixed;
+      top: -60px;
+      font-size: 22px;
+      pointer-events: none;
+      animation: fallDown var(--fall-d) ease-in var(--fall-delay) forwards;
+      z-index: 20;
+    }
+
+    @keyframes fallDown {
+      0%   { transform: translateY(0) rotate(0deg) scale(1);   opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateY(110vh) rotate(var(--rot)) scale(0.6); opacity: 0; }
+    }
+
+    /* Texto central */
+    .message {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1.2s ease;
+      padding: 2rem;
+    }
+
+    .message.visible {
+      opacity: 1;
+    }
+
+    .message p {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      color: #f0e0ff;
+      text-align: center;
+      line-height: 1.9;
+      letter-spacing: 0.08em;
+      text-shadow:
+        0 0 20px rgba(200, 140, 255, 0.6),
+        0 0 60px rgba(160, 80, 255, 0.3);
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stars" id="stars"></div>
+
+  <div class="nebula" style="width:500px;height:400px;background:#6030a0;top:-100px;left:-120px;"></div>
+  <div class="nebula" style="width:400px;height:350px;background:#1a0a4a;bottom:-80px;right:-100px;"></div>
+  <div class="nebula" style="width:300px;height:300px;background:#3a1060;top:50%;left:60%;"></div>
+
+  <div class="btn-wrap" id="btnWrap">
+    <button class="push-btn" id="pushBtn">push me &lt;3</button>
+  </div>
+
+  <div class="message" id="message">
+    <p>Feliz cumpleaños!, <br>Espero te guste mi regalo.</p>
+  </div>
+  <div class="message" id="message2">
+  <p>Gracias por compartir estos años conmigo,<br>te amo</p>
+</div>
+
+  <script>
+    // Estrellas de fondo
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 150; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = Math.random() * 2.5 + 0.5;
+      s.style.cssText = `
+        width:${size}px; height:${size}px;
+        top:${Math.random()*100}%; left:${Math.random()*100}%;
+        --d:${(Math.random()*3+1.5).toFixed(2)}s;
+        animation-delay:${(Math.random()*4).toFixed(2)}s;
+      `;
+      starsEl.appendChild(s);
+    }
+
+    const btn     = document.getElementById('pushBtn');
+    const btnWrap = document.getElementById('btnWrap');
+    const message = document.getElementById('message');
+
+    const particles = ['⭐', '🌟', '💛', '💛', '🤍', '💫', '🌀', '✨', '💛', '🌌'];
+
+    btn.addEventListener('click', () => {
+      // Ocultar botón
+      btnWrap.classList.add('hidden');
+const total = 3;
+for (let i = 0; i < total; i++) {
+      // Lanzar lluvia de partículas
+      function lanzarParticula() {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.textContent = particles[Math.floor(Math.random() * particles.length)];
+  const duration = (Math.random() * 2.5 + 2).toFixed(2);
+  const rotation = Math.floor(Math.random() * 720 - 360) + 'deg';
+  p.style.cssText = `
+    left: ${Math.random() * 100}vw;
+    font-size: ${Math.floor(Math.random() * 18 + 14)}px;
+    --fall-d: ${duration}s;
+    --fall-delay: 0s;
+    --rot: ${rotation};
+  `;
+  document.body.appendChild(p);
+  p.addEventListener('animationend', () => p.remove());
+}
+
+setInterval(lanzarParticula, 150);
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.textContent = particles[Math.floor(Math.random() * particles.length)];
+        const duration = (Math.random() * 2.5 + 2).toFixed(2);
+        const delay    = (Math.random() * 3).toFixed(2);
+        const rotation = Math.floor(Math.random() * 720 - 360) + 'deg';
+        p.style.cssText = `
+          left: ${Math.random() * 100}vw;
+          font-size: ${Math.floor(Math.random() * 18 + 14)}px;
+          --fall-d: ${duration}s;
+          --fall-delay: ${delay}s;
+          --rot: ${rotation};
+        `;
+        document.body.appendChild(p);
+        p.addEventListener('animationend', () => p.remove());
+      }
+
+      // Mostrar mensaje después de un pequeño delay
+      setTimeout(() => {
+        message.classList.add('visible');
+      }, 800);
+      setTimeout(() => {
+  message.classList.remove('visible');
+}, 4000);
+
+// Segundo mensaje aparece a los 3 segundos
+setTimeout(() => {
+  document.getElementById('message2').classList.add('visible');
+}, 5000);
+    });
+  </script>
+</body>
+</html>
